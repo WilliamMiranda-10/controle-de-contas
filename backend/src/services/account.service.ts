@@ -1,5 +1,8 @@
 import * as accountRepository from "../repositories/account.repositoy.js";
-import type { CreateAccount, UpdateAccount } from "../schemas/account.schema.js";
+import type {
+  CreateAccount,
+  UpdateAccount,
+} from "../schemas/account.schema.js";
 
 export function findAll() {
   return accountRepository.findAll();
@@ -10,6 +13,12 @@ export function findById(id: number) {
 }
 
 export function create(data: CreateAccount) {
+  if (data.currentInstallment > data.totalInstallments) {
+    throw new Error(
+      "A parcela atual não pode ser maior que a quantidade total de parcelas"
+    );
+  }
+
   return accountRepository.create(data);
 }
 
