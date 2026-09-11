@@ -42,9 +42,16 @@ export function create(req: Request, res: Response) {
     });
   }
 
-  const account = accountService.create(result.data);
-
-  return res.status(201).json(account);
+  try {
+    const account = accountService.create(result.data);
+    return res.status(201).json(account);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
+  }
 }
 
 export function update(req: Request, res: Response) {
