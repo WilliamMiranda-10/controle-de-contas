@@ -1,5 +1,10 @@
-import type { Account} from "../types/account.js";
-import type { CreateAccount, UpdateAccount } from "../schemas/account.schema.js";
+import type { Account } from "../types/account.js";
+import type {
+  CreateAccount,
+  UpdateAccount,
+} from "../schemas/account.schema.js";
+import { number } from "zod";
+import { id } from "zod/locales";
 
 const accounts: Account[] = [
   {
@@ -51,4 +56,16 @@ export function update(id: number, data: UpdateAccount): Account | undefined {
   Object.assign(account, data);
 
   return account;
+}
+
+export function deleteAccount(id: number): boolean {
+  const index = accounts.findIndex((account) => account.id === id);
+
+  if (index === -1) {
+    return false;
+  }
+
+  accounts.splice(index, 1);
+  
+  return true;
 }

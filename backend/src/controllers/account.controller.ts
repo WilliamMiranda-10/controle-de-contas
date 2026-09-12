@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import { type Request, type Response } from "express";
 import * as accountService from "../services/account.service.js";
 import {
   createAccountSchema,
@@ -72,7 +72,26 @@ export function update(req: Request, res: Response) {
 
   const { id } = req.params;
 
-  const account = accountService.update(Number(id), result.data);
+  try {
+    const account = accountService.update(Number(id), result.data);
+    if (!account) {
+      return res.status(404).json({
+        message: "Account not found",
+      });
+    }
+
+    return res.status(200).json(account);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).send({ message: error.message });
+    }
+  }
+}
+
+export function deleteAccount(req: Request, res: Response) {
+  const { id } = req.params;
+
+  const account = accountService.deleteAccount(Number(id));
 
   if (!account) {
     return res.status(404).json({
@@ -80,5 +99,7 @@ export function update(req: Request, res: Response) {
     });
   }
 
-  return res.status(200).json(account);
+  return res.status(200).json({
+    message: "Account deleted successfully",
+  });
 }

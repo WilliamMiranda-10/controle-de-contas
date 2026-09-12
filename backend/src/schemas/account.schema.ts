@@ -12,7 +12,7 @@ export const createAccountSchema = z.object({
   currentInstallment: z
     .number()
     .int()
-    .positive("A parcela atual deve ser maior que 0."),
+    .nonnegative("A parcela atual deve ser maior que 0."),
   dueDate: z.string("A data de vencimento é obrigatória."),
   paid: z.boolean("O campo pago deve ser verdadeiro ou falso."),
 });

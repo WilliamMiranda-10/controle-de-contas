@@ -23,5 +23,28 @@ export function create(data: CreateAccount) {
 }
 
 export function update(id: number, data: UpdateAccount) {
+  const account = accountRepository.findById(id);
+
+  if (!account) {
+    return undefined;
+  }
+
+  const currentInstallment =
+    data.currentInstallment ?? account.currentInstallment;
+  const totalInstallments = data.totalInstallments ?? account.totalInstallments;
+
+  console.log("current", currentInstallment);
+  console.log("total", totalInstallments);
+
+  if (currentInstallment > totalInstallments) {
+    throw new Error(
+      "A parcela atual não pode ser maior que a quantidade total de parcelas"
+    );
+  }
+
   return accountRepository.update(id, data);
+}
+
+export function deleteAccount(id: number) {
+  return accountRepository.deleteAccount(id);
 }
