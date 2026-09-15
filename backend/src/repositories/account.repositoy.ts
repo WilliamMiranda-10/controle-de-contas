@@ -3,8 +3,7 @@ import type {
   CreateAccount,
   UpdateAccount,
 } from "../schemas/account.schema.js";
-import { number } from "zod";
-import { id } from "zod/locales";
+import pool from "../../config/database.js";
 
 const accounts: Account[] = [
   {
@@ -27,35 +26,73 @@ const accounts: Account[] = [
   },
 ];
 
-export function findAll(): Account[] {
-  return accounts;
+export async function findAll(): Promise<Account[]> {
+  const result = await pool.query("SELECT * FROM accounts");
+  return result.rows;
 }
 
-export function findById(id: number): Account | undefined {
-  return accounts.find((account) => account.id === id);
+export async function findById(id: number): Promise<Account | undefined> {
+  const result = await pool.query("SELECT * FROM accounts WHERE id = $1", [id]);
+  return result.rows[0];
 }
 
-export function create(data: CreateAccount): Account {
-  const newAccount: Account = {
-    id: accounts.length + 1,
-    ...data,
-  };
+export async function create(data: CreateAccount): Promise<Account> {
+  const result = await pool.query(
+    "INSERT INTO accounts (description, amount, total_installments, current_installment, due_date, paid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+    [
+      data.description,
+      data.amount,
+      data.totalInstallments,
+      data.currentInstallment,
+      data.dueDate,
+      data.paid,
+    ]
+  );
 
-  accounts.push(newAccount);
-
-  return newAccount;
+  return result.rows[0];
 }
 
-export function update(id: number, data: UpdateAccount): Account | undefined {
-  const account = accounts.find((account) => account.id === id);
+export async function update(
+  id: number,
+  data: UpdateAccount
+): Promise<Account | undefined> {
+  const fields: string[] = [];
+  const values: unknown[] = [];
 
-  if (!account) {
+  for (const [key, value] of Object.entries(data)) {
+    const columnMap: Record<string, string> = {
+      description: "description",
+      amount: "amount",
+      totalInstallments: "total_installments",
+      currentInstallment: "current_installment",
+      dueDate: "due_date",
+      paid: "paid",
+    };
+
+    const column = columnMap[key];
+
+    if (!column) {
+      continue;
+    }
+
+    fields.push(`${column} = $${values.length + 1}`);
+    values.push(value);
+  }
+
+  if (fields.length === 0) {
     return undefined;
   }
 
-  Object.assign(account, data);
+  values.push(id);
 
-  return account;
+  const result = await pool.query(
+    `UPDATE accounts SET ${fields.join(", ")} WHERE id = $${
+      values.length
+    } RETURNING *`,
+    values
+  );
+
+  return result.rows[0];
 }
 
 export function deleteAccount(id: number): boolean {
@@ -66,6 +103,6 @@ export function deleteAccount(id: number): boolean {
   }
 
   accounts.splice(index, 1);
-  
+
   return true;
 }

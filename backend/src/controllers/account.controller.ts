@@ -5,16 +5,16 @@ import {
   updateAccountSchema,
 } from "../schemas/account.schema.js";
 
-export function findAll(req: Request, res: Response) {
-  const accounts = accountService.findAll();
+export async function findAll(req: Request, res: Response) {
+  const accounts = await accountService.findAll();
 
   return res.status(200).json(accounts);
 }
 
-export function findById(req: Request, res: Response) {
+export async function findById(req: Request, res: Response) {
   const { id } = req.params;
 
-  const account = accountService.findById(Number(id));
+  const account = await accountService.findById(Number(id));
 
   if (!account) {
     return res.status(404).json({
@@ -25,7 +25,7 @@ export function findById(req: Request, res: Response) {
   return res.status(200).json(account);
 }
 
-export function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response) {
   const result = createAccountSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -43,7 +43,7 @@ export function create(req: Request, res: Response) {
   }
 
   try {
-    const account = accountService.create(result.data);
+    const account = await accountService.create(result.data);
     return res.status(201).json(account);
   } catch (error) {
     if (error instanceof Error) {
