@@ -54,7 +54,7 @@ export async function create(req: Request, res: Response) {
   }
 }
 
-export function update(req: Request, res: Response) {
+export async function update(req: Request, res: Response) {
   const result = updateAccountSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -73,7 +73,8 @@ export function update(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
-    const account = accountService.update(Number(id), result.data);
+    const account = await accountService.update(Number(id), result.data);
+
     if (!account) {
       return res.status(404).json({
         message: "Account not found",
@@ -88,12 +89,12 @@ export function update(req: Request, res: Response) {
   }
 }
 
-export function deleteAccount(req: Request, res: Response) {
+export async function deleteAccount(req: Request, res: Response) {
   const { id } = req.params;
 
-  const account = accountService.deleteAccount(Number(id));
+  const deleted = await accountService.deleteAccount(Number(id));
 
-  if (!account) {
+  if (!deleted) {
     return res.status(404).json({
       message: "Account not found",
     });

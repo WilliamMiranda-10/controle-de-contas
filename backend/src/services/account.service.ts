@@ -19,19 +19,18 @@ export async function create(data: CreateAccount) {
     );
   }
 
-  
   return await accountRepository.create(data);
 }
 
 export async function update(id: number, data: UpdateAccount) {
-
   const account = await accountRepository.findById(id);
 
   if (!account) {
     return undefined;
   }
 
-  const currentInstallment = data.currentInstallment ?? account.currentInstallment;
+  const currentInstallment =
+    data.currentInstallment ?? account.currentInstallment;
   const totalInstallments = data.totalInstallments ?? account.totalInstallments;
 
   if (currentInstallment > totalInstallments) {
@@ -40,9 +39,9 @@ export async function update(id: number, data: UpdateAccount) {
     );
   }
 
-  return accountRepository.update(id, data);
+  return await accountRepository.update(id, data);
 }
 
-export function deleteAccount(id: number) {
-  return accountRepository.deleteAccount(id);
+export async function deleteAccount(id: number) {
+  return await accountRepository.deleteAccount(id);
 }

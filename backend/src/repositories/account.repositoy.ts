@@ -95,14 +95,11 @@ export async function update(
   return result.rows[0];
 }
 
-export function deleteAccount(id: number): boolean {
-  const index = accounts.findIndex((account) => account.id === id);
+export async function deleteAccount(id: number): Promise<boolean> {
+  const result = await pool.query("DELETE FROM accounts WHERE id = $1", [id]);
 
-  if (index === -1) {
+  if (result.rowCount === 0) {
     return false;
   }
-
-  accounts.splice(index, 1);
-
   return true;
 }
