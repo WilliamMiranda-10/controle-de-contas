@@ -8,3 +8,14 @@ export interface Account {
   paid: boolean; // se foi pago ou nao
 }
 
+
+export interface AccountRow{
+  id: number,
+  description: string,
+  amount: string,
+  total_installments: number,
+  current_installment: number,
+  due_date: string,
+  paid: boolean
+}
+
