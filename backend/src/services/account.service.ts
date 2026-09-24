@@ -1,3 +1,4 @@
+import { AppError } from "../errors/appError.js";
 import * as accountRepository from "../repositories/account.repositoy.js";
 import type {
   CreateAccount,
@@ -14,8 +15,9 @@ export async function findById(id: number) {
 
 export async function create(data: CreateAccount) {
   if (data.currentInstallment > data.totalInstallments) {
-    throw new Error(
-      "A parcela atual não pode ser maior que a quantidade total de parcelas"
+    throw new AppError(
+      "A parcela atual não pode ser maior que a quantidade total de parcelas",
+      400
     );
   }
 
@@ -34,8 +36,9 @@ export async function update(id: number, data: UpdateAccount) {
   const totalInstallments = data.totalInstallments ?? account.totalInstallments;
 
   if (currentInstallment > totalInstallments) {
-    throw new Error(
-      "A parcela atual não pode ser maior que a quantidade total de parcelas"
+    throw new AppError(
+      "A parcela atual não pode ser maior que a quantidade total de parcelas",
+      400
     );
   }
 

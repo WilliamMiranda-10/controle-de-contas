@@ -42,16 +42,8 @@ export async function create(req: Request, res: Response) {
     });
   }
 
-  try {
-    const account = await accountService.create(result.data);
-    return res.status(201).json(account);
-  } catch (error) {
-    if (error instanceof Error) {
-      return res.status(400).json({
-        message: error.message,
-      });
-    }
-  }
+  const account = await accountService.create(result.data);
+  return res.status(201).json(account);
 }
 
 export async function update(req: Request, res: Response) {
@@ -72,21 +64,15 @@ export async function update(req: Request, res: Response) {
 
   const { id } = req.params;
 
-  try {
-    const account = await accountService.update(Number(id), result.data);
+  const account = await accountService.update(Number(id), result.data);
 
-    if (!account) {
-      return res.status(404).json({
-        message: "Account not found",
-      });
-    }
-
-    return res.status(200).json(account);
-  } catch (error) {
-    if (error instanceof Error) {
-      return res.status(400).send({ message: error.message });
-    }
+  if (!account) {
+    return res.status(404).json({
+      message: "Account not found",
+    });
   }
+
+  return res.status(200).json(account);
 }
 
 export async function deleteAccount(req: Request, res: Response) {
