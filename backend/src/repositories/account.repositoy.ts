@@ -6,6 +6,8 @@ import type {
 import pool from "../../config/database.js";
 
 export function mapRowToAccount(row: AccountRow): Account {
+ 
+
   return {
     id: row.id,
     description: row.description,
@@ -15,6 +17,8 @@ export function mapRowToAccount(row: AccountRow): Account {
     dueDate: row.due_date,
     paid: row.paid,
   };
+
+  
 }
 
 export async function findAll(): Promise<Account[]> {
