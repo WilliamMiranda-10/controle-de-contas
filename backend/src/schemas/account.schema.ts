@@ -17,6 +17,13 @@ export const createAccountSchema = z.object({
   paid: z.boolean("O campo pago deve ser verdadeiro ou falso."),
 });
 
+export const accountIdSchema = z.object({
+  id: z.coerce
+    .number()
+    .int("O ID deve ser um número inteiro.")
+    .positive("O ID deve ser maior que 0."),
+});
+
 export const updateAccountSchema = createAccountSchema.partial();
 // trasnforma todas as restrições do createAccountSchema em opcional
 // porem se passar os valores tera que seguir as regras do createAccountSchema.
@@ -24,3 +31,5 @@ export const updateAccountSchema = createAccountSchema.partial();
 export type CreateAccount = z.infer<typeof createAccountSchema>;
 
 export type UpdateAccount = z.infer<typeof updateAccountSchema>;
+
+export type AccountIdParams = z.infer<typeof accountIdSchema>
