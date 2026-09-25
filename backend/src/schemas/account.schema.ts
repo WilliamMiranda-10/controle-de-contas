@@ -19,9 +19,8 @@ export const createAccountSchema = z.object({
 
 export const accountIdSchema = z.object({
   id: z.coerce
-    .number()
-    .int("O ID deve ser um número inteiro.")
-    .positive("O ID deve ser maior que 0."),
+    .string()
+    .regex(/^[1-9]\d*$/, "O ID deve ser um número inteiro maior que 0.")
 });
 
 export const updateAccountSchema = createAccountSchema.partial();

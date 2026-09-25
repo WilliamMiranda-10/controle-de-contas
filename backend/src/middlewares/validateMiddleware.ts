@@ -18,7 +18,9 @@ export function validate(schema: ZodType, target: "body" | "params") {
       });
     }
 
-    req[target] = result.data
+    if (req[target] === "body") {
+      req[target] = result.data;
+    }
 
     next();
   };

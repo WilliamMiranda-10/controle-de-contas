@@ -12,6 +12,8 @@ export async function findAll(req: Request, res: Response) {
   return res.status(200).json(accounts);
 }
 
+
+
 export async function findById(req: Request, res: Response) {
   const { id } = req.params;
 
@@ -26,13 +28,17 @@ export async function findById(req: Request, res: Response) {
   return res.status(200).json(account);
 }
 
+
+
 export async function create(
-  req: Request<AccountIdParams, {}, CreateAccount>,
+  req: Request<{}, {}, CreateAccount>,
   res: Response
 ) {
   const account = await accountService.create(req.body);
   return res.status(201).json(account);
 }
+
+
 
 export async function update(
   req: Request<AccountIdParams, {}, UpdateAccount>,
@@ -40,7 +46,7 @@ export async function update(
 ) {
   const { id } = req.params;
 
-  const account = await accountService.update(id, req.body);
+  const account = await accountService.update(Number(id), req.body);
 
   if (!account) {
     return res.status(404).json({
@@ -51,13 +57,13 @@ export async function update(
   return res.status(200).json(account);
 }
 
-export async function deleteAccount(
-  req: Request<AccountIdParams, {}, UpdateAccount>,
-  res: Response
-) {
+
+
+
+export async function deleteAccount(req: Request, res: Response) {
   const { id } = req.params;
 
-  const deleted = await accountService.deleteAccount(id);
+  const deleted = await accountService.deleteAccount(Number(id));
 
   if (!deleted) {
     return res.status(404).json({
@@ -69,3 +75,4 @@ export async function deleteAccount(
     message: "Account deleted successfully",
   });
 }
+
