@@ -6,15 +6,13 @@ import type {
   UpdateAccount,
 } from "../schemas/account.schema.js";
 
-export async function findAll(req: Request, res: Response) {
+export async function findAll(_req: Request, res: Response) {
   const accounts = await accountService.findAll();
 
   return res.status(200).json(accounts);
 }
 
-
-
-export async function findById(req: Request, res: Response) {
+export async function findById(req: Request<AccountIdParams>, res: Response) {
   const { id } = req.params;
 
   const account = await accountService.findById(Number(id));
@@ -28,8 +26,6 @@ export async function findById(req: Request, res: Response) {
   return res.status(200).json(account);
 }
 
-
-
 export async function create(
   req: Request<{}, {}, CreateAccount>,
   res: Response
@@ -37,8 +33,6 @@ export async function create(
   const account = await accountService.create(req.body);
   return res.status(201).json(account);
 }
-
-
 
 export async function update(
   req: Request<AccountIdParams, {}, UpdateAccount>,
@@ -57,10 +51,10 @@ export async function update(
   return res.status(200).json(account);
 }
 
-
-
-
-export async function deleteAccount(req: Request, res: Response) {
+export async function deleteAccount(
+  req: Request<AccountIdParams>,
+  res: Response
+) {
   const { id } = req.params;
 
   const deleted = await accountService.deleteAccount(Number(id));
@@ -75,4 +69,3 @@ export async function deleteAccount(req: Request, res: Response) {
     message: "Account deleted successfully",
   });
 }
-

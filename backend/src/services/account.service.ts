@@ -5,23 +5,30 @@ import type {
   UpdateAccount,
 } from "../schemas/account.schema.js";
 
-export async function findAll() {
-  return await accountRepository.findAll();
-}
-
-export async function findById(id: number) {
-  return await accountRepository.findById(id);
-}
-
-export async function create(data: CreateAccount) {
-  if (data.currentInstallment > data.totalInstallments) {
+function validateInstallments(
+  currentInstallment: number,
+  totalInstallments: number
+): void {
+  if (currentInstallment > totalInstallments) {
     throw new AppError(
       "A parcela atual não pode ser maior que a quantidade total de parcelas",
       400
     );
   }
+}
 
-  return await accountRepository.create(data);
+export function findAll() {
+  return accountRepository.findAll();
+}
+
+export function findById(id: number) {
+  return accountRepository.findById(id);
+}
+
+export function create(data: CreateAccount) {
+  validateInstallments(data.currentInstallment, data.totalInstallments);
+
+  return accountRepository.create(data);
 }
 
 export async function update(id: number, data: UpdateAccount) {
@@ -35,16 +42,11 @@ export async function update(id: number, data: UpdateAccount) {
     data.currentInstallment ?? account.currentInstallment;
   const totalInstallments = data.totalInstallments ?? account.totalInstallments;
 
-  if (currentInstallment > totalInstallments) {
-    throw new AppError(
-      "A parcela atual não pode ser maior que a quantidade total de parcelas",
-      400
-    );
-  }
+  validateInstallments(currentInstallment, totalInstallments);
 
   return await accountRepository.update(id, data);
 }
 
-export async function deleteAccount(id: number) {
-  return await accountRepository.deleteAccount(id);
+export function deleteAccount(id: number) {
+  return accountRepository.deleteAccount(id);
 }

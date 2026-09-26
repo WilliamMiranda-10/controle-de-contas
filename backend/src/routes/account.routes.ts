@@ -24,6 +24,6 @@ router.patch(
   validate(updateAccountSchema, "body"),
   update
 );
-router.delete("/:id", deleteAccount);
+router.delete("/:id", validate(accountIdSchema, "params"), deleteAccount);
 
 export default router;
