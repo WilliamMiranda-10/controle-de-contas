@@ -6,8 +6,6 @@ import type {
 import pool from "../../config/database.js";
 
 export function mapRowToAccount(row: AccountRow): Account {
- 
-
   return {
     id: row.id,
     description: row.description,
@@ -17,8 +15,6 @@ export function mapRowToAccount(row: AccountRow): Account {
     dueDate: row.due_date,
     paid: row.paid,
   };
-
-  
 }
 
 export async function findAll(): Promise<Account[]> {
@@ -69,21 +65,17 @@ export async function update(
   const fields: string[] = [];
   const values: unknown[] = [];
 
+  const columnMap: Record<keyof UpdateAccount, string> = {
+    description: "description",
+    amount: "amount",
+    totalInstallments: "total_installments",
+    currentInstallment: "current_installment",
+    dueDate: "due_date",
+    paid: "paid",
+  };
+
   for (const [key, value] of Object.entries(data)) {
-    const columnMap: Record<string, string> = {
-      description: "description",
-      amount: "amount",
-      totalInstallments: "total_installments",
-      currentInstallment: "current_installment",
-      dueDate: "due_date",
-      paid: "paid",
-    };
-
-    const column = columnMap[key];
-
-    if (!column) {
-      continue;
-    }
+    const column = columnMap[key as keyof UpdateAccount];
 
     fields.push(`${column} = $${values.length + 1}`);
     values.push(value);
