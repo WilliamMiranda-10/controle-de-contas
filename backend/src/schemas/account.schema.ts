@@ -20,10 +20,14 @@ export const createAccountSchema = z.object({
 export const accountIdSchema = z.object({
   id: z.coerce
     .string()
-    .regex(/^[1-9]\d*$/, "O ID deve ser um número inteiro maior que 0.")
+    .regex(/^[1-9]\d*$/, "O ID deve ser um número inteiro maior que 0."),
 });
 
-export const updateAccountSchema = createAccountSchema.partial();
+export const updateAccountSchema = createAccountSchema
+  .partial()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Envie pelo menos um campo para atualizar",
+  });
 // trasnforma todas as restrições do createAccountSchema em opcional
 // porem se passar os valores tera que seguir as regras do createAccountSchema.
 
@@ -31,4 +35,4 @@ export type CreateAccount = z.infer<typeof createAccountSchema>;
 
 export type UpdateAccount = z.infer<typeof updateAccountSchema>;
 
-export type AccountIdParams = z.infer<typeof accountIdSchema>
+export type AccountIdParams = z.infer<typeof accountIdSchema>;
