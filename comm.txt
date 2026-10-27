@@ -1,0 +1,15 @@
+1. O que fiz?
+   ↓
+"adicionei validação de ID"
+
+2. Qual o tipo?
+   ↓
+nova funcionalidade → feat
+
+3. Traduzo ação + objeto
+   ↓
+add + ID validation
+
+4. Resultado
+   ↓
+feat: add ID validation

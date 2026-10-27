@@ -12,13 +12,13 @@ export const createAccountSchema = z.object({
   currentInstallment: z
     .number()
     .int()
-    .nonnegative("A parcela atual deve ser maior que 0."),
+    .nonnegative("A parcela atual não pode ser negativa"),
   dueDate: z.string("A data de vencimento é obrigatória."),
   paid: z.boolean("O campo pago deve ser verdadeiro ou falso."),
 });
 
 export const accountIdSchema = z.object({
-  id: z.coerce
+  id: z
     .string()
     .regex(/^[1-9]\d*$/, "O ID deve ser um número inteiro maior que 0."),
 });
