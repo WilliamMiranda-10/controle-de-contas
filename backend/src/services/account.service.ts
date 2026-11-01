@@ -5,6 +5,31 @@ import type {
   UpdateAccount,
 } from "../schemas/account.schema.js";
 
+export async function getSummary() {
+  const accounts = await accountRepository.findAll();
+
+  const summary = accounts.reduce(
+    (acc, account) => {
+      if (account.paid) {
+        acc.total += account.amount;
+        acc.paid += account.amount;
+      } else {
+        acc.total += account.amount;
+        acc.pending += account.amount;
+      }
+
+      return acc;
+    },
+    {
+      total: 0,
+      paid: 0,
+      pending: 0,
+    }
+  );
+
+  return summary;
+}
+
 function validateInstallments(
   currentInstallment: number,
   totalInstallments: number

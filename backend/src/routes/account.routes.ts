@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   findAll,
+  getSummary,
   create,
   findById,
   update,
@@ -16,6 +17,7 @@ import { validate } from "../middlewares/validateMiddleware.js";
 const router = Router();
 
 router.get("/", findAll);
+router.get("/summary", getSummary);
 router.get("/:id", validate(accountIdSchema, "params"), findById);
 router.post("/", validate(createAccountSchema, "body"), create);
 router.patch(
