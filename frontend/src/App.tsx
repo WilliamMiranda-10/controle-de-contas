@@ -1,6 +1,6 @@
 import Header from "./components/Header.tsx";
 import type { Account, CreateAccount } from "./types/account.ts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { SyntheticEvent } from "react";
 import "./App.css";
 
@@ -41,6 +41,11 @@ function App() {
     };
 
     addAccount(data);
+    setDescription("");
+    setAmount(0);
+    setTotalInstallments(1);
+    setCurrentInstallment(0);
+    setDueDate("");
   }
 
   const [description, setDescription] = useState("");
@@ -48,6 +53,17 @@ function App() {
   const [totalInstallments, setTotalInstallments] = useState(1);
   const [currentInstallment, setCurrentInstallment] = useState(0);
   const [dueDate, setDueDate] = useState("");
+
+  async function fetchAccounts() {
+    const response = await fetch("http://localhost:3000/accounts");
+    const data = await response.json();
+   
+    setAccounts(data);
+  }
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
   return (
     <main>
@@ -81,35 +97,43 @@ function App() {
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               placeholder="Descrição da conta"
+              required
             />
           </div>
           <div>
             <input
               type="number"
+              min={0.0}
               value={amount}
               onChange={(event) => setAmount(Number(event.target.value))}
               placeholder="Valor da parcela"
+              required
             />
           </div>
           <div>
             <input
               type="number"
+              min={1}
+              step={1}
               value={totalInstallments}
               onChange={(event) =>
                 setTotalInstallments(Number(event.target.value))
               }
               placeholder="Total de parcelas"
+              required
             />
           </div>
           <div>
             <input
               type="number"
               step={1}
+              max={12}
               value={currentInstallment}
               onChange={(event) =>
                 setCurrentInstallment(Number(event.target.value))
               }
               placeholder="parcela atual"
+              required
             />
           </div>
           <div>
@@ -117,6 +141,7 @@ function App() {
               type="date"
               value={dueDate}
               onChange={(event) => setDueDate(event.target.value)}
+              required
             />
           </div>
         </div>
