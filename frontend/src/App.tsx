@@ -1,11 +1,19 @@
 import Header from "./components/Header.tsx";
-import type { Account, CreateAccount } from "./types/account.ts";
+import type { Account, CreateAccount, UpdateAccount } from "./types/account.ts";
 import { useState, useEffect } from "react";
 import type { SyntheticEvent } from "react";
 import "./App.css";
 
 function App() {
   const [accounts, setAccounts] = useState<Account[]>([]);
+
+  const [editingAccountId, setEditingAccountId] = useState<number | null>(null);
+
+  const [description, setDescription] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [totalInstallments, setTotalInstallments] = useState(1);
+  const [currentInstallment, setCurrentInstallment] = useState(0);
+  const [dueDate, setDueDate] = useState("");
 
   const currencyFormatter = new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -48,6 +56,12 @@ function App() {
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
+
+      if (editingAccountId !== null) {
+        await updateAccount();
+        return;
+      }
+      
       const data: CreateAccount = {
         description,
         amount,
@@ -81,6 +95,70 @@ function App() {
     }
   }
 
+  async function handleEdit(id: number) {
+    const account = accounts.find((item) => item.id === id);
+
+    if (!account) {
+      throw new Error("Conta não encontrada.");
+    }
+
+    setEditingAccountId(id);
+
+    setDescription(account.description);
+    setAmount(account.amount);
+    setTotalInstallments(account.totalInstallments);
+    setCurrentInstallment(account.currentInstallment);
+    setDueDate(account.dueDate);
+  }
+
+  async function updateAccount() {
+    try {
+      if (editingAccountId === null) {
+        return;
+      }
+
+      const data: UpdateAccount = {
+        description,
+        amount,
+        totalInstallments,
+        currentInstallment,
+        dueDate,
+      };
+
+      const response = await fetch(
+        `http://localhost:3000/accounts/${editingAccountId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Não foi possivel editar a conta."
+        );
+      }
+
+      const account = await response.json();
+
+      setAccounts((currentAccounts) =>
+        currentAccounts.map((item) => (item.id === account.id ? account : item))
+      );
+
+      setEditingAccountId(null);
+
+      setDescription("");
+      setAmount(0);
+      setTotalInstallments(1);
+      setCurrentInstallment(0);
+      setDueDate("");
+    } catch (error) {
+      console.error("Erro ao editar conta:", error);
+    }
+  }
+
   async function deleteAccount(id: number) {
     try {
       const response = await fetch(`http://localhost:3000/accounts/${id}`, {
@@ -101,12 +179,6 @@ function App() {
       console.error("Erro ao deletar conta:", error);
     }
   }
-
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [totalInstallments, setTotalInstallments] = useState(1);
-  const [currentInstallment, setCurrentInstallment] = useState(0);
-  const [dueDate, setDueDate] = useState("");
 
   async function fetchAccounts() {
     const response = await fetch("http://localhost:3000/accounts");
@@ -138,6 +210,9 @@ function App() {
           <button onClick={() => togglePayment(account.id)}>
             {account.paid ? "Desfazer pagamento" : "Marcar como paga"}
           </button>
+          <div>
+            <button onClick={() => handleEdit(account.id)}>Editar</button>
+          </div>
           <div>
             <button onClick={() => deleteAccount(account.id)}>Excluir</button>
           </div>
