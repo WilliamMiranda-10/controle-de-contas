@@ -12,22 +12,37 @@ function App() {
     currency: "BRL",
   });
 
-  function togglePayment(id: number) {
-    setAccounts(
-      accounts.map((account) =>
-        account.id === id ? { ...account, paid: !account.paid } : account
-      )
-    );
-  }
+  async function togglePayment(id: number) {
+    try {
+      const account = accounts.find((item) => item.id === id);
 
-  function addAccount(data: CreateAccount) {
-    const newAccount: Account = {
-      id: Date.now(),
-      ...data,
-      paid: false,
-    };
+      if (!account) {
+        throw new Error("Conta não encontrada.");
+      }
 
-    setAccounts((currentAccounts) => [...currentAccounts, newAccount]);
+      const response = await fetch(`http://localhost:3000/accounts/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paid: !account.paid }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Não foi possível atualizar a conta."
+        );
+      }
+
+      const updateAccount: Account = await response.json();
+
+      setAccounts((currentAccounts) =>
+        currentAccounts.map((item) =>
+          item.id === updateAccount.id ? updateAccount : item
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar pagamento:", error);
+    }
   }
 
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
@@ -47,8 +62,6 @@ function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-
-    
 
       if (!response.ok) {
         throw new Error("Error");

@@ -18,7 +18,9 @@ export function mapRowToAccount(row: AccountRow): Account {
 }
 
 export async function findAll(): Promise<Account[]> {
-  const result = await pool.query<AccountRow>("SELECT * FROM accounts");
+  const result = await pool.query<AccountRow>(
+    "SELECT * FROM accounts ORDER BY id ASC"
+  );
 
   return result.rows.map((row) => mapRowToAccount(row));
 }
