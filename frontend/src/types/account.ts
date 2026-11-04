@@ -8,4 +8,4 @@ export interface Account {
   paid: boolean;
 }
 
-export type CreateAccount = Omit<Account, "id" | "paid">;
+export type CreateAccount = Omit<Account, "id">;

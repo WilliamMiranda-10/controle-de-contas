@@ -30,22 +30,42 @@ function App() {
     setAccounts((currentAccounts) => [...currentAccounts, newAccount]);
   }
 
-  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data: CreateAccount = {
-      description,
-      amount,
-      totalInstallments,
-      currentInstallment,
-      dueDate,
-    };
+  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
+    try {
+      event.preventDefault();
+      const data: CreateAccount = {
+        description,
+        amount,
+        totalInstallments,
+        currentInstallment,
+        dueDate,
+        paid: false,
+      };
 
-    addAccount(data);
-    setDescription("");
-    setAmount(0);
-    setTotalInstallments(1);
-    setCurrentInstallment(0);
-    setDueDate("");
+      const response = await fetch("http://localhost:3000/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+    
+
+      if (!response.ok) {
+        throw new Error("Error");
+      }
+
+      const result = await response.json();
+
+      setAccounts((currentAccounts) => [...currentAccounts, result]);
+
+      setDescription("");
+      setAmount(0);
+      setTotalInstallments(1);
+      setCurrentInstallment(0);
+      setDueDate("");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const [description, setDescription] = useState("");
@@ -57,7 +77,7 @@ function App() {
   async function fetchAccounts() {
     const response = await fetch("http://localhost:3000/accounts");
     const data = await response.json();
-   
+
     setAccounts(data);
   }
 
