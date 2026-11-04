@@ -81,6 +81,27 @@ function App() {
     }
   }
 
+  async function deleteAccount(id: number) {
+    try {
+      const response = await fetch(`http://localhost:3000/accounts/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "Não foi possivel deletar a conta."
+        );
+      }
+
+      setAccounts((currentAccounts) =>
+        currentAccounts.filter((item) => item.id !== id)
+      );
+    } catch (error) {
+      console.error("Erro ao deletar conta:", error);
+    }
+  }
+
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState(0);
   const [totalInstallments, setTotalInstallments] = useState(1);
@@ -117,6 +138,9 @@ function App() {
           <button onClick={() => togglePayment(account.id)}>
             {account.paid ? "Desfazer pagamento" : "Marcar como paga"}
           </button>
+          <div>
+            <button onClick={() => deleteAccount(account.id)}>Excluir</button>
+          </div>
 
           <hr />
         </div>
@@ -178,8 +202,9 @@ function App() {
             />
           </div>
         </div>
-
-        <button type="submit">Cadastrar conta</button>
+        <div>
+          <button type="submit">Cadastrar conta</button>
+        </div>
       </form>
     </main>
   );
