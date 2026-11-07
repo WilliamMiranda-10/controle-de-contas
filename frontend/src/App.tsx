@@ -9,6 +9,8 @@ function App() {
 
   const [editingAccountId, setEditingAccountId] = useState<number | null>(null);
 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState(0);
   const [totalInstallments, setTotalInstallments] = useState(1);
@@ -20,6 +22,7 @@ function App() {
     currency: "BRL",
   });
 
+  // BOTÃO MARCA COMO PAGO
   async function togglePayment(id: number) {
     try {
       const account = accounts.find((item) => item.id === id);
@@ -53,6 +56,7 @@ function App() {
     }
   }
 
+  // CADASTRAR CONTA
   async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     try {
       event.preventDefault();
@@ -61,7 +65,7 @@ function App() {
         await updateAccount();
         return;
       }
-      
+
       const data: CreateAccount = {
         description,
         amount,
@@ -95,6 +99,7 @@ function App() {
     }
   }
 
+  // BOTÃO EDITAR CONTA
   async function handleEdit(id: number) {
     const account = accounts.find((item) => item.id === id);
 
@@ -111,6 +116,7 @@ function App() {
     setDueDate(account.dueDate);
   }
 
+  // FUNÇAO PARA ATUALIZAR CONTA
   async function updateAccount() {
     try {
       if (editingAccountId === null) {
@@ -159,6 +165,7 @@ function App() {
     }
   }
 
+  // FUNÇÃO PARA DELETAR
   async function deleteAccount(id: number) {
     try {
       const response = await fetch(`http://localhost:3000/accounts/${id}`, {
@@ -180,6 +187,7 @@ function App() {
     }
   }
 
+  // LISTA TODAS AS CONTAS
   async function fetchAccounts() {
     const response = await fetch("http://localhost:3000/accounts");
     const data = await response.json();

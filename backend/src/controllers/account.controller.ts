@@ -6,7 +6,7 @@ import type {
   UpdateAccount,
 } from "../schemas/account.schema.js";
 
-export async function getSummary(req: Request, res: Response) {
+export async function getSummary(_req: Request, res: Response) {
   const result = await accountService.getSummary();
 
   return res.status(200).json(result);

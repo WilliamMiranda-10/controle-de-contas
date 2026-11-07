@@ -3,7 +3,7 @@ import type {
   CreateAccount,
   UpdateAccount,
 } from "../schemas/account.schema.js";
-import pool from "../../config/database.js";
+import pool from "../config/database.js";
 
 export function mapRowToAccount(row: AccountRow): Account {
   return {

@@ -3,9 +3,9 @@ import { AppError } from "../errors/appError.js";
 
 export function errorMiddleware(
   error: unknown,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
