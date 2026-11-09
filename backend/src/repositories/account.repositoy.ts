@@ -4,6 +4,7 @@ import type {
   UpdateAccount,
 } from "../schemas/account.schema.js";
 import pool from "../config/database.js";
+import { AppError } from "../errors/appError.js";
 
 export function mapRowToAccount(row: AccountRow): Account {
   return {
@@ -79,6 +80,10 @@ export async function update(
   for (const [key, value] of Object.entries(data)) {
     const column = columnMap[key as keyof UpdateAccount];
 
+    if (!column) {
+      throw new AppError(`Campo não permitido: ${key}`, 400);
+    }
+
     fields.push(`${column} = $${values.length + 1}`);
     values.push(value);
   }
@@ -108,8 +113,5 @@ export async function update(
 export async function deleteAccount(id: number): Promise<boolean> {
   const result = await pool.query("DELETE FROM accounts WHERE id = $1", [id]);
 
-  if (result.rowCount === 0) {
-    return false;
-  }
-  return true;
+  return (result.rowCount ?? 0) > 0;
 }

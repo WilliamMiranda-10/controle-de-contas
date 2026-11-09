@@ -11,12 +11,11 @@ export async function getSummary() {
   const summary = accounts.reduce(
     (acc, account) => {
       if (account.paid) {
-        acc.total += account.amount;
         acc.paid += account.amount;
       } else {
-        acc.total += account.amount;
         acc.pending += account.amount;
       }
+      acc.total += account.amount;
 
       return acc;
     },
@@ -69,7 +68,7 @@ export async function update(id: number, data: UpdateAccount) {
 
   validateInstallments(currentInstallment, totalInstallments);
 
-  return await accountRepository.update(id, data);
+  return accountRepository.update(id, data);
 }
 
 export function deleteAccount(id: number) {

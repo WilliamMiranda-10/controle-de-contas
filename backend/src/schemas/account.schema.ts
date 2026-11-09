@@ -13,7 +13,7 @@ export const createAccountSchema = z.object({
     .number()
     .int()
     .nonnegative("A parcela atual não pode ser negativa"),
-  dueDate: z.string("A data de vencimento é obrigatória."),
+  dueDate: z.iso.date("A data de vencimento é obrigatória."),
   paid: z.boolean("O campo pago deve ser verdadeiro ou falso."),
 });
 
@@ -28,8 +28,6 @@ export const updateAccountSchema = createAccountSchema
   .refine((data) => Object.keys(data).length > 0, {
     message: "Envie pelo menos um campo para atualizar",
   });
-// trasnforma todas as restrições do createAccountSchema em opcional
-// porem se passar os valores tera que seguir as regras do createAccountSchema.
 
 export type CreateAccount = z.infer<typeof createAccountSchema>;
 
